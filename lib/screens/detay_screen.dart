@@ -158,7 +158,7 @@ class _DetayScreenState extends State<DetayScreen> {
     } else {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('لا يمكن فتح WhatsApp')));
+      ).showSnackBar(SnackBar(content: Text('WhatsApp açılamıyor')));
     }
   }
 
@@ -175,7 +175,7 @@ class _DetayScreenState extends State<DetayScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('$title '), backgroundColor: Colors.teal),
+      appBar: AppBar(title: Text('$title ',style: TextStyle(color: Colors.white),), backgroundColor: Colors.teal),
       body: Column(
         children: [
           Expanded(
@@ -267,13 +267,13 @@ class _DetayScreenState extends State<DetayScreen> {
                               ),
                               ElevatedButton.icon(
                                 onPressed: () {
-                                  final phone = '905510110860';
+                                  final phone = '905550033953';
                                   final message =
-                                      'Merhabalar,Bunun Hakkında bilgi almak istiyorum $name';
+                                      'Merhabalar,Bunun Hakkında bilgi almak istiyorum : $name';
                                   openWhatsApp(phone: phone, message: message);
                                 },
                                 icon: Icon(Icons.phone, color: Colors.white),
-                                label: Text('WhatsApp\' Bağlan'),
+                                label: Text('WhatsApp\'a Bağlan',style: TextStyle(color: Colors.white),),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.green,
                                   minimumSize: Size(double.infinity, 40),

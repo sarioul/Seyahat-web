@@ -1,3 +1,6 @@
+import 'package:seyahat_web/icons/my_flutter_app_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../screens/detay_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +14,19 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  void openWhatsApp({required String phone, required String message}) async {
+    final whatsappUrl = Uri.parse(
+      "https://wa.me/$phone?text=${Uri.encodeComponent(message)}",
+    );
+    if (await canLaunchUrl(whatsappUrl)) {
+      await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('WhatsApp açılamıyor')));
+    }
+  }
+
   final Map<String, List<Map<String, dynamic>>> catagoryData = {
     'Bungalov Evler': [
       {
@@ -153,57 +169,268 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: Colors.white,
         title: Text('Seyahat Rehberim'),
       ),
-      body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisSpacing: 15,
-          crossAxisSpacing: 15,
-          childAspectRatio: 5 / 7,
-        ),
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(5),
-            child: ClipRRect(
-              borderRadius: BorderRadiusGeometry.circular(15),
-              child: InkWell(
-                splashColor: Colors.teal,
-                borderRadius: BorderRadius.circular(15),
-                onTap: () {
-                  final selectedTitle = names[index];
-                  Navigator.pushNamed(
-                    context,
-                    DetayScreen.screenRoute,
-                    arguments: {
-                      'title': selectedTitle,
-                      'places': catagoryData[selectedTitle],
-                    },
-                  );
-                },
-                child: Stack(
+      drawer: Drawer(
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.white, Colors.teal.shade50],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: Column(
+            children: [
+              DrawerHeader(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Colors.teal, Colors.teal.shade200],
+                  ),
+                ),
+                child: Row(
                   children: [
-                    SizedBox.expand(
-                      child: Image.asset(images[index], fit: BoxFit.cover),
+                    CircleAvatar(
+                      radius: 35,
+                      backgroundImage: AssetImage('images/polat.png'),
                     ),
-                    Container(
-                      color: Colors.black.withOpacity(0.4),
-                      alignment: Alignment.center,
+                    SizedBox(width: 10),
+                    Expanded(
                       child: Text(
-                        names[index],
+                        'المهندس والدليل السياحي\nمعتز النعسان',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 30,
+                          fontSize: 16,
+                          height: 1.4,
                           fontWeight: FontWeight.bold,
                         ),
-                        textAlign: TextAlign.center,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-          );
-        },
+
+              // main
+              ListTile(
+                leading: Icon(Icons.home, color: Colors.teal),
+                title: Text('الصفحة الرئيسية'),
+                onTap: () {
+                  Navigator.pop(context);
+                },
+              ),
+              Divider(),
+              //names(category)
+              Expanded(
+                child: ListView.builder(
+                  itemCount: names.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Icon(Icons.place, color: Colors.teal),
+                      title: Text(
+                        names[index],
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      onTap: () {
+                        final selectedTitle = names[index];
+                        Navigator.pushNamed(
+                          context,
+                          DetayScreen.screenRoute,
+                          arguments: {
+                            'title': selectedTitle,
+                            'places': catagoryData[selectedTitle],
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+
+              Divider(),
+
+              // أزرار التواصل
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: Icon(Icons.phone, color: Colors.green),
+                      title: Text('تواصل عبر واتساب'),
+                      onTap: () {
+                        final phone = '905550033953';
+                        final message = Uri.encodeComponent(
+                          'Merhaba, bilgi almak istiyorum.',
+                        );
+                        final url = 'https://wa.me/$phone?text=$message';
+                        launchUrl(
+                          Uri.parse(url),
+                          mode: LaunchMode.externalApplication,
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        MyFlutterApp.instagram,
+                        color: Colors.purple,
+                      ),
+                      title: Text('حساب إنستغرام'),
+                      onTap: () {
+                        final instaUsername = 'polat_samlioglu/';
+                        final url = 'https://instagram.com/$instaUsername';
+                        launchUrl(
+                          Uri.parse(url),
+                          mode: LaunchMode.externalApplication,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+
+      // drawer: Drawer(
+      //   child: Column(
+      //     children: [
+      //       DrawerHeader(
+      //         decoration: BoxDecoration(
+      //           gradient: LinearGradient(
+      //             colors: [Colors.teal, Colors.teal.shade200],
+      //           ),
+      //         ),
+      //         child: Row(
+      //           children: [
+      //             CircleAvatar(
+      //               radius: 35,
+      //               backgroundImage: AssetImage('images/polat.png'),
+      //             ),
+      //             SizedBox(width: 10),
+      //             Expanded(
+      //               child: Text(
+      //                 'المهندس والدليل السياحي\nمعتز النعسان',
+      //                 style: TextStyle(
+      //                   color: Colors.white,
+      //                   fontSize: 16,
+      //                   height: 1.4,
+      //                   fontWeight: FontWeight.bold,
+      //                 ),
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //       ListTile(
+      //         leading: Icon(Icons.home, color: Colors.teal),
+      //         title: Text('الصفحة الرئيسية'),
+      //         onTap: () {
+      //           Navigator.pop(context);
+      //         },
+      //       ),
+      //       Expanded(
+      //         child: ListView.builder(
+      //           itemCount: names.length,
+      //           itemBuilder: (context, index) {
+      //             return Column(
+      //               children: [
+      //                 ListTile(
+      //                   leading: Text(
+      //                     '-  ${names[index]}',
+      //                     style: TextStyle(color: Colors.teal, fontSize: 20),
+      //                   ),
+      //                   onTap: () {
+      //                     final selectedTitle = names[index];
+      //                     Navigator.pushNamed(
+      //                       context,
+      //                       DetayScreen.screenRoute,
+      //                       arguments: {
+      //                         'title': selectedTitle,
+      //                         'places': catagoryData[selectedTitle],
+      //                       },
+      //                     );
+      //                   },
+      //                 ),
+      //                 Divider(
+      //                   thickness: 1,
+      //                   height: 20,
+      //                   color: Colors.teal[700],
+      //                 ),
+      //               ],
+      //             );
+      //           },
+      //         ),
+      //       ),
+      //       IconButton(
+      //         onPressed: () {
+      //           final phone = '905550033953';
+      //           final message =
+      //               'Merhabalar,Bunun Hakkında bilgi almak istiyorum :';
+      //           openWhatsApp(phone: phone, message: message);
+      //         },
+      //         icon: Icon(Icons.phone, color: Colors.white),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      body: Padding(
+        padding: const EdgeInsets.all(5),
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 5,
+            childAspectRatio: 5 / 7,
+          ),
+          itemCount: images.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.all(5),
+              child: ClipRRect(
+                borderRadius: BorderRadiusGeometry.circular(15),
+                child: InkWell(
+                  splashColor: Colors.teal,
+                  borderRadius: BorderRadius.circular(15),
+                  onTap: () {
+                    final selectedTitle = names[index];
+                    Navigator.pushNamed(
+                      context,
+                      DetayScreen.screenRoute,
+                      arguments: {
+                        'title': selectedTitle,
+                        'places': catagoryData[selectedTitle],
+                      },
+                    );
+                  },
+                  child: Stack(
+                    children: [
+                      SizedBox.expand(
+                        child: Image.asset(images[index], fit: BoxFit.cover),
+                      ),
+                      Container(
+                        color: Colors.black.withOpacity(0.4),
+                        alignment: Alignment.center,
+                        child: Text(
+                          names[index],
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
